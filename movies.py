@@ -70,10 +70,28 @@ class MovieCollection:
     def search_by_year(self, year: int) -> List[Movie]:
         """Ищет фильмы по году выпуска."""
         return [movie for movie in self._movies.values() if movie.year == year]
+    
+    def get_collection_movies(self, collection_name: str) -> List[Movie]:
+        """Возвращает все фильмы из указанной коллекции."""
+        if collection_name not in self._collections:
+            raise ValueError(f"Коллекция '{collection_name}' не найдена")
+        movies = []
+        for title in self._collections[collection_name]:
+            if title in self._movies:
+                movies.append(self._movies[title])
+        return movies
 
     def __iter__(self) -> Iterator[Movie]:
         """Возвращает итератор для перебора всех фильмов."""
-        return iter(self._movies.values())  
+        return iter(self._movies.values())
+
+    def __len__(self) -> int:
+        """Возвращает количество фильмов в коллекции."""
+        return len(self._movies)
+    
+    def __contains__(self, title: str) -> bool:
+        """Проверяет, есть ли фильм с указанным названием в коллекции."""
+        return title in self._movies
 
 
 if __name__ == "__main__":
@@ -93,7 +111,11 @@ if __name__ == "__main__":
     print("Фильмы Эндрю Адамсона:")
     for movie in collection.search_by_director("Andrew Ralph Adamson"):
         print(f"- {movie.title} ({movie.year})")
-        
+
+    print("\nФильмы из коллекции 'Classics':")
+    for movie in collection.get_collection_movies("Classics"):
+        print(f"- {movie.title}")
+
     print("\nВсе фильмы в коллекции:")
     for movie in collection:
         print(f"- {movie.title} ({movie.year}), режиссер: {movie.director}")
